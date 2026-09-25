@@ -1,16 +1,21 @@
 <?php 
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
+// LÍNH GÁC MỚI: Đẩy về đúng cửa login_admin.php
 if (!isset($_SESSION['admin_id'])) {
-    header("Location: login.php"); 
-    exit();
+    echo "<script>alert('CẢNH BÁO: Bạn chưa đăng nhập trang Quản trị!'); window.location.href='login_admin.php';</script>";
+    exit(); 
 }
 
 include 'db.php'; 
 
-
+// 1. LẤY DỮ LIỆU CŨ CỦA TOUR
 if (isset($_GET['id'])) {
-    $id = mysqli_real_escape_string($conn, $_GET['id']);
+    // VÁ LỖ HỔNG: Bắt buộc dùng intval() thay vì mysqli_real_escape_string cho biến là số
+    $id = intval($_GET['id']); 
+    
     $sql_get = "SELECT * FROM Tours WHERE TourID = $id";
     $result = mysqli_query($conn, $sql_get);
     $tour = mysqli_fetch_assoc($result);
@@ -18,35 +23,38 @@ if (isset($_GET['id'])) {
     if (!$tour) {
         die("Không tìm thấy tour này!");
     }
+} else {
+    header("Location: admin_list_tours.php");
+    exit();
 }
 
-
+// 2. XỬ LÝ LƯU CẬP NHẬT
 if (isset($_POST['btnUpdate'])) {
+    // Ép kiểu SỐ nguyên bằng intval() cho các cột dữ liệu số
+    $cat_id = intval($_POST['category_id']);
+    $price = intval($_POST['price']);
+    $max_people = intval($_POST['max_people']); 
+    
+    // Dùng escape cho các cột dữ liệu CHỮ
     $name = mysqli_real_escape_string($conn, $_POST['tour_name']);
-    $cat_id = $_POST['category_id'];
-    $price = $_POST['price'];
-    // LẤY GIÁ TRỊ SỐ NGƯỜI TỐI ĐA MỚI
-    $max_people = $_POST['max_people']; 
     $duration = mysqli_real_escape_string($conn, $_POST['duration']);
     $image = mysqli_real_escape_string($conn, $_POST['image_url']);
     $desc = mysqli_real_escape_string($conn, $_POST['description']);
-    
     $departure_schedule = mysqli_real_escape_string($conn, $_POST['departure_schedule']);
     $departure_location = mysqli_real_escape_string($conn, $_POST['departure_location']);
 
-    // CẬP NHẬT THÊM CỘT MaxPeople VÀO CÂU LỆNH SQL
+    // CẬP NHẬT CÂU LỆNH SQL
     $sql_update = "UPDATE Tours SET 
                     TourName = '$name', 
-                    CategoryID = '$cat_id', 
-                    Price = '$price', 
-                    MaxPeople = '$max_people', 
+                    CategoryID = $cat_id, 
+                    Price = $price, 
+                    MaxPeople = $max_people, 
                     Duration = '$duration', 
                     ImageURL = '$image', 
                     Description = '$desc',
                     DepartureSchedule = '$departure_schedule',
                     DepartureLocation = '$departure_location' 
                    WHERE TourID = $id";
-
     
     if (mysqli_query($conn, $sql_update)) {
         echo "<script>alert('Cập nhật tour thành công!'); window.location='admin_list_tours.php';</script>";
@@ -60,7 +68,7 @@ if (isset($_POST['btnUpdate'])) {
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Sửa Tour: <?php echo $tour['TourName']; ?></title>
+    <title>Sửa Tour: <?php echo htmlspecialchars($tour['TourName']); ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
@@ -89,7 +97,7 @@ if (isset($_POST['btnUpdate'])) {
                     <form method="POST">
                         <div class="mb-3">
                             <label class="form-label fw-bold">Tên Tour:</label>
-                            <input type="text" name="tour_name" class="form-control" value="<?php echo $tour['TourName']; ?>" required>
+                            <input type="text" name="tour_name" class="form-control" value="<?php echo htmlspecialchars($tour['TourName']); ?>" required>
                         </div>
 
                         <div class="row">
@@ -100,7 +108,7 @@ if (isset($_POST['btnUpdate'])) {
                                     $res_cat = mysqli_query($conn, "SELECT * FROM Categories");
                                     while($cat = mysqli_fetch_assoc($res_cat)) {
                                         $selected = ($cat['CategoryID'] == $tour['CategoryID']) ? "selected" : "";
-                                        echo "<option value='".$cat['CategoryID']."' $selected>".$cat['CategoryName']."</option>";
+                                        echo "<option value='".$cat['CategoryID']."' $selected>".htmlspecialchars($cat['CategoryName'])."</option>";
                                     }
                                     ?>
                                 </select>
@@ -118,25 +126,25 @@ if (isset($_POST['btnUpdate'])) {
                         <div class="row">
                             <div class="col-md-3 mb-3">
                                 <label class="form-label fw-bold">Thời lượng:</label>
-                                <input type="text" name="duration" class="form-control" value="<?php echo $tour['Duration']; ?>">
+                                <input type="text" name="duration" class="form-control" value="<?php echo htmlspecialchars($tour['Duration']); ?>">
                             </div>
                             <div class="col-md-3 mb-3">
                                 <label class="form-label fw-bold">Lịch khởi hành:</label>
-                                <input type="text" name="departure_schedule" class="form-control" value="<?php echo $tour['DepartureSchedule']; ?>" placeholder="Ví dụ: Thứ 7 hàng tuần">
+                                <input type="text" name="departure_schedule" class="form-control" value="<?php echo htmlspecialchars($tour['DepartureSchedule']); ?>" placeholder="Ví dụ: Thứ 7 hàng tuần">
                             </div>
                             <div class="col-md-3 mb-3">
                                 <label class="form-label fw-bold">Điểm khởi hành:</label>
-                                <input type="text" name="departure_location" class="form-control" value="<?php echo $tour['DepartureLocation']; ?>" placeholder="Ví dụ: TP.HCM">
+                                <input type="text" name="departure_location" class="form-control" value="<?php echo htmlspecialchars($tour['DepartureLocation']); ?>" placeholder="Ví dụ: TP.HCM">
                             </div>
                             <div class="col-md-3 mb-3">
                                 <label class="form-label fw-bold">Link ảnh:</label>
-                                <input type="text" name="image_url" class="form-control" value="<?php echo $tour['ImageURL']; ?>">
+                                <input type="text" name="image_url" class="form-control" value="<?php echo htmlspecialchars($tour['ImageURL']); ?>">
                             </div>
                         </div>
 
                         <div class="mb-4">
                             <label class="form-label fw-bold">Mô tả & Lịch trình:</label>
-                            <textarea name="description" class="form-control" rows="6"><?php echo $tour['Description']; ?></textarea>
+                            <textarea name="description" class="form-control" rows="6"><?php echo htmlspecialchars($tour['Description']); ?></textarea>
                         </div>
 
                         <div class="d-grid gap-2">

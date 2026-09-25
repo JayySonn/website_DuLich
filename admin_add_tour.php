@@ -1,28 +1,30 @@
 <?php 
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
+// LÍNH GÁC MỚI: Kiểm tra thẻ 'admin_id' và đẩy về đúng cửa login_admin.php
 if (!isset($_SESSION['admin_id'])) {
-    header("Location: login.php"); 
-    exit();
+    echo "<script>alert('CẢNH BÁO: Bạn chưa đăng nhập trang Quản trị!'); window.location.href='login_admin.php';</script>";
+    exit(); 
 }
 include 'db.php';
 
-
 if(isset($_POST['btnThem'])) {
+    // VÁ LỖ HỔNG: Dùng intval() cho các dữ liệu là CON SỐ để chống SQL Injection
+    $cat_id = intval($_POST['category_id']);
+    $price = intval($_POST['price']);
+    $max_people = intval($_POST['max_people']); 
     
+    // Dùng mysqli_real_escape_string cho các dữ liệu là CHỮ
     $name = mysqli_real_escape_string($conn, $_POST['tour_name']);
-    $cat_id = $_POST['category_id'];
-    $price = $_POST['price'];
-    // LẤY GIÁ TRỊ SỐ NGƯỜI TỐI ĐA TỪ FORM
-    $max_people = $_POST['max_people']; 
     $duration = mysqli_real_escape_string($conn, $_POST['duration']);
     $image = mysqli_real_escape_string($conn, $_POST['image_url']);
     $desc = mysqli_real_escape_string($conn, $_POST['description']);
-    
     $departure_schedule = mysqli_real_escape_string($conn, $_POST['departure_schedule']);
     $departure_location = mysqli_real_escape_string($conn, $_POST['departure_location']);
 
-    // CẬP NHẬT CÂU LỆNH SQL: Thêm cột MaxPeople và giá trị $max_people
+    // CẬP NHẬT CÂU LỆNH SQL
     $sql = "INSERT INTO Tours (TourName, CategoryID, Price, MaxPeople, Duration, ImageURL, Description, DepartureSchedule, DepartureLocation) 
             VALUES ('$name', '$cat_id', '$price', '$max_people', '$duration', '$image', '$desc', '$departure_schedule', '$departure_location')";
 
@@ -56,7 +58,8 @@ if(isset($_POST['btnThem'])) {
 
 <?php include 'navbar_admin.php'; ?>
 
-<div class="container mb-5 mt-4"> <div class="row justify-content-center">
+<div class="container mb-5 mt-4"> 
+    <div class="row justify-content-center">
         <div class="col-lg-10">
             <div class="card admin-card">
                 <div class="card-header bg-white border-0 pt-4 pb-0 text-center">

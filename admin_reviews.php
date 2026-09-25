@@ -1,12 +1,15 @@
 <?php 
-session_start();
-include 'db.php';
-
-// Kiểm tra quyền Admin
-if (!isset($_SESSION['admin_id'])) {
-    header("Location: login.php"); 
-    exit();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
+
+// LÍNH GÁC MỚI: Đẩy về đúng cửa login_admin.php
+if (!isset($_SESSION['admin_id'])) {
+    echo "<script>alert('CẢNH BÁO: Bạn chưa đăng nhập trang Quản trị!'); window.location.href='login_admin.php';</script>";
+    exit(); 
+}
+
+include 'db.php';
 
 // --- 1. TẠO MÃ BẢO MẬT CSRF TOKEN ---
 if (empty($_SESSION['csrf_token'])) {
@@ -20,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (isset($_POST['action']) && isset($_POST['review_id'])) {
-        $id = intval($_POST['review_id']);
+        $id = intval($_POST['review_id']); // Đã ép kiểu số an toàn
 
         if ($_POST['action'] === 'approve') {
             // Cho phép hiển thị lên web

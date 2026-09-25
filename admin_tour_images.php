@@ -1,9 +1,13 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 include 'db.php';
 
+// LÍNH GÁC MỚI: Đẩy về đúng cửa login_admin.php
 if (!isset($_SESSION['admin_id'])) {
-    header("Location: login.php");
+    echo "<script>alert('CẢNH BÁO: Bạn chưa đăng nhập trang Quản trị!'); window.location.href='login_admin.php';</script>";
     exit();
 }
 
@@ -49,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_image'])) {
 
 // Xử lý xóa ảnh
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_image_id'])) {
-    if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_SESSION['csrf_token'])) {
+    if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
         die("Lỗi bảo mật!");
     }
     $img_id = intval($_POST['delete_image_id']);
@@ -118,7 +122,7 @@ $list_images = mysqli_stmt_get_result($stmt_imgs);
                 <div class="col-md-3 col-sm-6">
                     <div class="img-card p-2">
                         <!-- Gọi hàm showImageModal khi click -->
-                        <img src="<?php echo htmlspecialchars($img['ImageURL']); ?>" alt="Tour Image" onerror="this.src='https://via.placeholder.com/300x160?text=Lỗi+Ảnh';" onclick="showImageModal(this.src)" title="Nhấn để xem rõ hơn">
+                        <img src="<?php echo htmlspecialchars($img['ImageURL']); ?>" alt="Tour Image" onerror="this.src='https://placehold.co/300x160?text=Lỗi+Ảnh';" onclick="showImageModal(this.src)" title="Nhấn để xem rõ hơn">
                         <div class="p-2 d-flex justify-content-between align-items-center">
                             <small class="text-muted text-truncate" style="max-width: 140px;"><?php echo htmlspecialchars($img['ImageURL']); ?></small>
                             <form method="POST" action="admin_tour_images.php?tour_id=<?php echo $tour_id; ?>" class="mb-0">

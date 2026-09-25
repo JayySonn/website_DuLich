@@ -1,27 +1,48 @@
 <?php 
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// LÍNH GÁC MỚI: Kiểm tra thẻ 'admin_id' và đẩy về đúng cửa login_admin.php
 if (!isset($_SESSION['admin_id'])) {
-    header("Location: login.php");
-    exit();
+    echo "<script>alert('CẢNH BÁO: Bạn chưa đăng nhập trang Quản trị!'); window.location.href='login_admin.php';</script>";
+    exit(); 
 }
 include 'db.php';
 
-
+// THÊM DANH MỤC
 if(isset($_POST['btnAddCat'])) {
-    $cat_name = mysqli_real_escape_string($conn, $_POST['cat_name']);
+    // Cắt khoảng trắng dư thừa và chống SQL Injection
+    $cat_name = mysqli_real_escape_string($conn, trim($_POST['cat_name']));
+    
     if(!empty($cat_name)) {
-        $sql = "INSERT INTO Categories (CategoryName) VALUES ('$cat_name')";
-        if(mysqli_query($conn, $sql)) {
-            echo "<script>alert('Đã thêm danh mục: $cat_name');</script>";
+        // Kiểm tra xem danh mục đã tồn tại chưa để tránh trùng lặp
+        $check = mysqli_query($conn, "SELECT * FROM Categories WHERE CategoryName = '$cat_name'");
+        if (mysqli_num_rows($check) > 0) {
+            echo "<script>alert('Danh mục này đã tồn tại!');</script>";
+        } else {
+            $sql = "INSERT INTO Categories (CategoryName) VALUES ('$cat_name')";
+            if(mysqli_query($conn, $sql)) {
+                echo "<script>alert('Đã thêm danh mục: $cat_name'); window.location.href='admin_categories.php';</script>";
+            }
         }
     }
 }
 
-
+// XÓA DANH MỤC (Đã vá lỗ hổng SQL Injection)
 if(isset($_GET['delete_id'])) {
-    $id = $_GET['delete_id'];
-    mysqli_query($conn, "DELETE FROM Categories WHERE CategoryID = $id");
-    header("Location: admin_categories.php");
+    // BẮT BUỘC dùng intval() để ép biến $id từ URL thành số nguyên
+    $id = intval($_GET['delete_id']);
+    
+    // Kiểm tra xem có tour nào đang dùng danh mục này không (Ràng buộc khóa ngoại)
+    $check_tours = mysqli_query($conn, "SELECT * FROM Tours WHERE CategoryID = $id");
+    if (mysqli_num_rows($check_tours) > 0) {
+        echo "<script>alert('KHÔNG THỂ XÓA! Đang có Tour thuộc danh mục này. Hãy xóa Tour trước.'); window.location.href='admin_categories.php';</script>";
+    } else {
+        mysqli_query($conn, "DELETE FROM Categories WHERE CategoryID = $id");
+        header("Location: admin_categories.php");
+        exit();
+    }
 }
 ?>
 
@@ -29,7 +50,7 @@ if(isset($_GET['delete_id'])) {
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Quản lý danh mục - MienTay Travel</title>
+    <title>Quản lý danh mục - Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
@@ -39,6 +60,8 @@ if(isset($_GET['delete_id'])) {
     </style>
 </head>
 <body>
+
+<?php include 'navbar_admin.php'; ?>
 
 <div class="container mt-5">
     <div class="row justify-content-center">
@@ -96,5 +119,6 @@ if(isset($_GET['delete_id'])) {
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

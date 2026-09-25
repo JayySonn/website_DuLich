@@ -1,7 +1,16 @@
 <?php 
-session_start();
-include 'navbar_admin.php';
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// LÍNH GÁC MỚI: Đẩy về đúng cửa login_admin.php
+if (!isset($_SESSION['admin_id'])) {
+    echo "<script>alert('CẢNH BÁO: Bạn chưa đăng nhập trang Quản trị!'); window.location.href='login_admin.php';</script>";
+    exit(); 
+}
+
 include 'db.php';
+include 'navbar_admin.php';
 
 // --- 1. TẠO MÃ BẢO MẬT CSRF TOKEN ---
 if (empty($_SESSION['csrf_token'])) {
@@ -70,8 +79,6 @@ $news_list = mysqli_query($conn, "SELECT * FROM News ORDER BY NewsID DESC");
     <div class="container py-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="fw-bold">Quản lý Tin tức & Cẩm nang</h2>
-            <!-- NÚT QUAY LẠI ĐÃ ĐƯỢC SỬA ĐÍCH ĐẾN -->
-            
         </div>
 
         <!-- FORM THÊM TIN TỨC -->
@@ -133,7 +140,7 @@ $news_list = mysqli_query($conn, "SELECT * FROM News ORDER BY NewsID DESC");
                         <tr>
                             <td>
                                 <!-- Kiểm tra nếu ảnh lỗi hoặc trống thì hiện ảnh mặc định -->
-                                <img src="<?php echo !empty($row['ImageURL']) ? htmlspecialchars($row['ImageURL']) : 'https://via.placeholder.com/80x50?text=No+Image'; ?>" alt="img" onerror="this.src='https://via.placeholder.com/80x50?text=Error';">
+                                <img src="<?php echo !empty($row['ImageURL']) ? htmlspecialchars($row['ImageURL']) : 'https://placehold.co/80x50?text=No+Image'; ?>" alt="img" onerror="this.src='https://placehold.co/80x50?text=Error';">
                             </td>
                             <td>
                                 <div class="fw-bold small"><?php echo htmlspecialchars($row['Title']); ?></div>

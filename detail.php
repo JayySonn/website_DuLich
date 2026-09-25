@@ -3,7 +3,8 @@ session_start();
 include 'db.php'; 
 
 if(isset($_GET['id'])) {
-    $id = mysqli_real_escape_string($conn, $_GET['id']);
+    // VÁ LỖ HỔNG: Bắt buộc dùng intval() để ép kiểu ID thành số nguyên
+    $id = intval($_GET['id']);
     $sql = "SELECT Tours.*, Categories.CategoryName FROM Tours 
             LEFT JOIN Categories ON Tours.CategoryID = Categories.CategoryID WHERE TourID = $id";
     $result = mysqli_query($conn, $sql);
@@ -17,11 +18,18 @@ if(isset($_GET['id'])) {
 $is_fixed_date = false;
 $fixed_date_value = "";
 $schedule = trim($tour['DepartureSchedule']); 
+$is_expired = false; // Biến cờ hiệu kiểm tra hết hạn
 
 if (preg_match('/^\d{1,2}\/\d{1,2}\/\d{4}$/', $schedule)) {
     $date_parts = explode('/', $schedule);
     $fixed_date_value = $date_parts[2] . '-' . $date_parts[1] . '-' . $date_parts[0];
     $is_fixed_date = true;
+
+    // KIỂM TRA NGÀY HẾT HẠN
+    $today = date('Y-m-d');
+    if (strtotime($fixed_date_value) < strtotime($today)) {
+        $is_expired = true; // Đánh dấu là đã hết hạn
+    }
 }
 
 $max_allowed = isset($tour['MaxPeople']) ? $tour['MaxPeople'] : 10;
@@ -181,8 +189,12 @@ $max_allowed = isset($tour['MaxPeople']) ? $tour['MaxPeople'] : 10;
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="form-label small fw-bold text-muted">Số điện thoại:</label>
-                                    <input type="text" name="customer_phone" class="form-control rounded-3 border-0 bg-light py-2" placeholder="09xxxxxxx" required>
+                                    <label class="form-label small fw-bold text-muted">Số điện thoại :</label>
+                                    <input type="tel" name="customer_phone" class="form-control rounded-3 border-0 bg-light py-2" 
+                                           placeholder="VD: 0912345678" 
+                                           pattern="^(03|05|07|08|09)[0-9]{8}$" 
+                                           title="Vui lòng nhập đúng 10 chữ số thuộc các nhà mạng Việt Nam (bắt đầu bằng 03, 05, 07, 08, 09)" 
+                                           required>
                                 </div>
 
                                 <div class="mb-3">
@@ -190,7 +202,13 @@ $max_allowed = isset($tour['MaxPeople']) ? $tour['MaxPeople'] : 10;
                                     <?php if($is_fixed_date): ?>
                                         <input type="date" class="form-control rounded-3 border-0 py-2" value="<?php echo $fixed_date_value; ?>" readonly>
                                         <input type="hidden" name="departure_date" value="<?php echo $fixed_date_value; ?>">
-                                        <small class="text-danger fw-bold" style="font-size: 0.7rem;">* Tour khởi hành cố định ngày <?php echo $schedule; ?></small>
+                                        
+                                        <?php if($is_expired): ?>
+                                            <small class="text-danger fw-bold d-block mt-1" style="font-size: 0.8rem;"><i class="bi bi-exclamation-triangle-fill"></i> Tour này đã qua ngày khởi hành!</small>
+                                        <?php else: ?>
+                                            <small class="text-primary fw-bold" style="font-size: 0.7rem;">* Tour khởi hành cố định ngày <?php echo $schedule; ?></small>
+                                        <?php endif; ?>
+
                                     <?php else: ?>
                                         <input type="date" name="departure_date" class="form-control rounded-3 border-0 bg-light py-2" required min="<?php echo date('Y-m-d'); ?>">
                                         <small class="text-muted fst-italic" style="font-size: 0.7rem;">* Lịch dự kiến: <?php echo $schedule; ?></small>
@@ -220,8 +238,13 @@ $max_allowed = isset($tour['MaxPeople']) ? $tour['MaxPeople'] : 10;
                                     <div class="small text-dark">STK: <strong>123456789</strong> - MB Bank<br>Tên: <strong>NGUYEN NGOC SON</strong></div>
                                 </div>
 
-                                <div class="d-grid">
-                                    <?php if(isset($_SESSION['user_id'])): ?>
+                                <div class="d-grid mt-3">
+                                    <?php if($is_expired): ?>
+                                        <!-- NÚT KHÓA NẾU TOUR ĐÃ HẾT HẠN -->
+                                        <button type="button" class="btn btn-secondary btn-lg fw-bold rounded-pill py-3" disabled>
+                                            <i class="bi bi-calendar-x me-2"></i>ĐÃ HẾT HẠN KHỞI HÀNH
+                                        </button>
+                                    <?php elseif(isset($_SESSION['user_id'])): ?>
                                         <button type="submit" name="btnBooking" class="btn btn-danger btn-lg fw-bold rounded-pill shadow-sm py-3">XÁC NHẬN ĐẶT TOUR</button>
                                     <?php else: ?>
                                         <a href="login_user.php" class="btn btn-outline-danger btn-lg fw-bold rounded-pill py-3">ĐĂNG NHẬP ĐỂ ĐẶT</a>
@@ -235,18 +258,16 @@ $max_allowed = isset($tour['MaxPeople']) ? $tour['MaxPeople'] : 10;
         </div>
     </div>
 
-    <!-- MODAL XEM ẢNH CHUYÊN NGHIỆP (ĐÃ FIX NÚT TẮT) -->
+    <!-- MODAL XEM ẢNH CHUYÊN NGHIỆP -->
     <div class="modal fade" id="imageLightbox" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content bg-transparent border-0">
                 <div class="modal-header border-0 pb-0 justify-content-end">
-                    <!-- Dùng trực tiếp Icon dấu X thay vì class btn-close mặc định -->
                     <button type="button" class="btn btn-dark border border-2 border-white rounded-circle shadow d-flex align-items-center justify-content-center p-0" data-bs-dismiss="modal" style="width: 25px; height: 25px; transition: 0.3s;">
                         <i class="bi bi-x-lg text-white fs-5"></i>
                     </button>
                 </div>
                 <div class="modal-body text-center p-0 mt-2">
-                    <!-- Thêm màu nền đen mờ sau ảnh để nhìn rõ ảnh hơn -->
                     <img id="lightboxImg" src="" class="img-fluid shadow-lg rounded" style="max-height: 85vh; object-fit: contain; background-color: rgba(0,0,0,0.7);">
                 </div>
             </div>
@@ -276,7 +297,6 @@ $max_allowed = isset($tour['MaxPeople']) ? $tour['MaxPeople'] : 10;
             document.getElementById('qr-section').style.display = (method === 'Chuyển khoản') ? 'block' : 'none';
         }
 
-        // Hàm nhận link ảnh và mở cửa sổ nổi (MỚI THÊM)
         function showImageModal(src) {
             document.getElementById('lightboxImg').src = src;
             var myModal = new bootstrap.Modal(document.getElementById('imageLightbox'));

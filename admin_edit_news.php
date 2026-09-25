@@ -1,14 +1,18 @@
 <?php 
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// LÍNH GÁC MỚI: Kiểm tra thẻ 'admin_id' và đẩy về đúng cửa login_admin.php
 if (!isset($_SESSION['admin_id'])) {
-    header("Location: login.php"); 
-    exit();
+    echo "<script>alert('CẢNH BÁO: Bạn chưa đăng nhập trang Quản trị!'); window.location.href='login_admin.php';</script>";
+    exit(); 
 }
 include 'db.php';
 
 // 1. LẤY DỮ LIỆU CŨ CỦA BÀI VIẾT
 if (isset($_GET['id'])) {
-    $id = intval($_GET['id']);
+    $id = intval($_GET['id']); // Đã có intval bảo vệ cực tốt!
     $result = mysqli_query($conn, "SELECT * FROM News WHERE NewsID = $id");
     $row = mysqli_fetch_assoc($result);
     if (!$row) {

@@ -1,22 +1,44 @@
 <?php 
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-// Kiểm tra quyền Admin
+// LÍNH GÁC MỚI: Đẩy về đúng cửa login_admin.php
 if (!isset($_SESSION['admin_id'])) {
-    header("Location: login.php"); 
-    exit();
+    echo "<script>alert('CẢNH BÁO: Bạn chưa đăng nhập trang Quản trị!'); window.location.href='login_admin.php';</script>";
+    exit(); 
 }
 
 include 'db.php'; 
 
-// Xử lý xóa tour
-if (isset($_GET['delete_id'])) {
-    $id = intval($_GET['delete_id']); // Dùng intval để bảo mật hơn
-    $sql_delete = "DELETE FROM Tours WHERE TourID = $id";
-    if(mysqli_query($conn, $sql_delete)) {
-        echo "<script>alert('Đã xóa tour thành công!'); window.location='admin_list_tours.php';</script>";
-    } else {
-        echo "Lỗi xóa: " . mysqli_error($conn);
+// --- TẠO MÃ BẢO MẬT CSRF TOKEN ---
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+// --- XỬ LÝ XÓA TOUR (Dùng POST để chống hack CSRF) ---
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete') {
+    // Kiểm tra Token
+    if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        die("<script>alert('Lỗi bảo mật! Yêu cầu không hợp lệ.'); window.location.href='admin_list_tours.php';</script>");
+    }
+
+    if (isset($_POST['delete_id'])) {
+        $id = intval($_POST['delete_id']); 
+        
+        // Kiểm tra xem Tour này có ai đặt chưa (Ràng buộc khóa ngoại)
+        $check_booking = mysqli_query($conn, "SELECT * FROM Bookings WHERE TourID = $id");
+        if (mysqli_num_rows($check_booking) > 0) {
+            echo "<script>alert('LỖI: Không thể xóa! Tour này đang có khách đặt. Vui lòng hủy các đơn đặt tour trước.'); window.location='admin_list_tours.php';</script>";
+        } else {
+            // Nếu chưa có ai đặt thì mới cho phép xóa
+            $sql_delete = "DELETE FROM Tours WHERE TourID = $id";
+            if(mysqli_query($conn, $sql_delete)) {
+                echo "<script>alert('Đã xóa tour thành công!'); window.location='admin_list_tours.php';</script>";
+            } else {
+                echo "<script>alert('Lỗi xóa: " . mysqli_error($conn) . "'); window.location='admin_list_tours.php';</script>";
+            }
+        }
     }
 }
 ?>
@@ -42,7 +64,7 @@ if (isset($_GET['delete_id'])) {
 
     <?php include 'navbar_admin.php'; ?>
 
-    <div class="container mt-4">
+    <div class="container mt-4 mb-5">
         <div class="table-container border-0">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
@@ -103,25 +125,31 @@ if (isset($_GET['delete_id'])) {
                                     </td>
                                     <td class="text-center">
                                         <div class="d-flex justify-content-center gap-1">
-                                            <!-- NÚT QUẢN LÝ THƯ VIỆN ẢNH (MỚI THÊM) -->
+                                            <!-- NÚT QUẢN LÝ THƯ VIỆN ẢNH -->
                                             <a href="admin_tour_images.php?tour_id=<?php echo $row['TourID']; ?>" 
                                                class="btn btn-sm btn-outline-info btn-action" 
                                                title="Quản lý thư viện ảnh phụ">
                                                 <i class="bi bi-images"></i>
                                             </a>
 
+                                            <!-- NÚT SỬA -->
                                             <a href="admin_edit_tour.php?id=<?php echo $row['TourID']; ?>" 
                                                class="btn btn-sm btn-outline-primary btn-action"
                                                title="Sửa tour">
                                                 <i class="bi bi-pencil-square"></i>
                                             </a>
                                             
-                                            <a href="admin_list_tours.php?delete_id=<?php echo $row['TourID']; ?>" 
-                                               class="btn btn-sm btn-outline-danger btn-action" 
-                                               onclick="return confirm('Sơn có chắc chắn muốn xóa tour này không?')"
-                                               title="Xóa tour">
-                                                <i class="bi bi-trash"></i>
-                                            </a>
+                                            <!-- NÚT XÓA BẰNG FORM (Bảo mật hơn GET) -->
+                                            <form method="POST" class="d-inline m-0 p-0">
+                                                <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+                                                <input type="hidden" name="action" value="delete">
+                                                <input type="hidden" name="delete_id" value="<?php echo $row['TourID']; ?>">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger btn-action" 
+                                                        title="Xóa tour"
+                                                        onclick="return confirm('Sơn có chắc chắn muốn xóa tour này không?');">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
                                         </div>
                                     </td>
                                 </tr>

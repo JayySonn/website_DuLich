@@ -1,5 +1,13 @@
 <?php 
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// LÍNH GÁC MỚI: Kiểm tra thẻ 'admin_id' và đẩy về đúng trang login_admin.php
+if (!isset($_SESSION['admin_id'])) {
+    echo "<script>alert('CẢNH BÁO: Bạn chưa đăng nhập trang Quản trị!'); window.location.href='login_admin.php';</script>";
+    exit(); 
+}
 
 // Cấu hình đường dẫn PHPMailer
 $base_path = dirname(__DIR__) . '/libs/PHPMailer/src/';
@@ -10,10 +18,6 @@ require $base_path . 'SMTP.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-if (!isset($_SESSION['admin_id'])) {
-    header("Location: login.php"); 
-    exit();
-}
 include 'db.php';
 
 // --- 1. TẠO MÃ BẢO MẬT CSRF TOKEN ---

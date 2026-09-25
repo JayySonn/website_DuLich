@@ -34,9 +34,7 @@
                     <a class="nav-link px-3 text-white border border-white rounded-pill ms-2" href="register.php">Đăng ký</a>
                 <?php endif; ?>
                 
-                <a class="nav-link ms-3 text-white-50" href="admin_list_tours.php" title="Quản trị">
-                    <i class="bi bi-person-lock fs-5 text-white"></i>
-                </a>
+                
             </div>
         </div>
     </div>

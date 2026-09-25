@@ -1,9 +1,14 @@
 <?php
-session_start();
-if (!isset($_SESSION['admin_id'])) {
-    header("Location: login.php");
-    exit();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
+
+// LÍNH GÁC MỚI: Kiểm tra thẻ 'admin_id' (dành cho database tách riêng bảng admins)
+if (!isset($_SESSION['admin_id'])) {
+    echo "<script>alert('CẢNH BÁO: Bạn chưa đăng nhập trang Quản trị!'); window.location.href='login_admin.php';</script>";
+    exit(); 
+}
+
 include 'db.php';
 
 // --- 1. TRUY VẤN DỮ LIỆU THỐNG KÊ TỔNG QUAN ---
