@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th9 19, 2026 lúc 04:59 PM
+-- Thời gian đã tạo: Th9 25, 2026 lúc 08:25 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -43,7 +43,7 @@ CREATE TABLE `admins` (
 --
 
 INSERT INTO `admins` (`AdminID`, `Username`, `Password`, `FullName`, `Email`, `FailedAttempts`, `LockUntil`, `LastLogin`) VALUES
-(1, 'admin', '123456', 'Nguyễn Ngọc Sơn', NULL, 0, NULL, NULL);
+(1, 'admin', '$2y$10$gSi1IEgIACGSxi0fwetSyOkPZR4Vk4NMqPpyNLYA/PKeyZ3zD.Pdy', 'Nguyễn Ngọc Sơn', NULL, 0, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -71,7 +71,10 @@ CREATE TABLE `bookings` (
 --
 
 INSERT INTO `bookings` (`BookingID`, `UserID`, `TourID`, `BookingDate`, `Quantity`, `TotalPrice`, `Status`, `PaymentMethod`, `PaymentStatus`, `DepartureDate`, `CustomerName`, `Phone`) VALUES
-(25, 1, 22, '2026-09-19 21:20:43', 2, 1999998.00, 'Đã duyệt', 'Tiền mặt', 'Chưa thanh toán', '2026-09-19', 'nguyễn Ngọc Sơn', '0336363276');
+(27, 1, 18, '2026-09-23 17:28:01', 1, 999999.00, 'Đã hủy', 'Tiền mặt', 'Chưa thanh toán', '2026-05-13', 'nguyễn Ngọc Sơn', '0231564789'),
+(28, 1, 21, '2026-09-23 17:29:42', 1, 999999.00, 'Đã hủy', 'Tiền mặt', 'Chưa thanh toán', '2026-08-18', 'nguyễn Ngọc Sơn', '01111111111111111111'),
+(29, 1, 17, '2026-09-23 17:33:34', 1, 1499000.00, 'Chờ xác nhận', 'Tiền mặt', 'Chưa thanh toán', '2026-08-18', 'nguyễn Ngọc Sơn', '0336363276'),
+(30, 1, 18, '2026-09-23 17:34:22', 9, 8999991.00, 'Chờ xác nhận', 'Tiền mặt', 'Chưa thanh toán', '2026-05-13', 'nguyễn Ngọc Sơn', '0336363276');
 
 -- --------------------------------------------------------
 
@@ -175,7 +178,8 @@ INSERT INTO `reviews` (`ReviewID`, `TourID`, `UserID`, `Rating`, `Comment`, `Sta
 (2, 19, 1, 5, 'I Love Mộc Châu', 1, '2026-03-22 13:52:29'),
 (3, 21, 1, 5, 'An Giang Xứ Sở Thần Tiên I Love An Giang', 1, '2026-03-23 12:08:43'),
 (4, 22, 1, 5, 'I Love Cà Mau', 1, '2026-03-23 14:00:52'),
-(6, 15, 1, 5, 'I Love Hà Giang', 1, '2026-04-02 08:03:46');
+(6, 15, 1, 5, 'I Love Hà Giang', 1, '2026-04-02 08:03:46'),
+(8, 22, 1, 1, 'aaaaa', 1, '2026-09-23 17:44:56');
 
 -- --------------------------------------------------------
 
@@ -215,7 +219,7 @@ INSERT INTO `tours` (`TourID`, `TourName`, `CategoryID`, `Price`, `Duration`, `I
 (19, 'Tour Mộc Châu: Sắc Màu Cao Nguyên', 2, 2799000.00, '2 Ngày 1 Đêm', 'https://vitracotour.com/wp-content/uploads/2023/12/moc-chau.png', 'Ngày 1: Đồi Chè Trái Tim – Thung Lũng Mận Nà Ka\r\n\r\nSáng: Di chuyển lên Mộc Châu. Check-in Đồi chè trái tim xanh mướt, trải nghiệm mặc trang phục dân tộc H\'Mông.\r\n\r\nChiều: Tham quan Thung lũng mận Nà Ka (ngắm hoa mận trắng vào mùa xuân hoặc hái quả vào mùa hè). Ghé thăm Thác Dải Yếm.\r\n\r\nTối: Lửa trại, thưởng thức bê chao, cá suối và rượu cần vùng cao.\r\n\r\nNgày 2: Cầu Kính Bạch Long – Rừng Thông Bản Áng\r\n\r\nSáng: Trải nghiệm Cầu kính Bạch Long (cầu kính đi bộ dài nhất thế giới). Sau đó dạo chơi tại Rừng thông Bản Áng – được ví như Đà Lạt thu nhỏ của miền Bắc.\r\n\r\nTrưa: Mua sắm sữa bò tươi, bánh sữa Mộc Châu và kết thúc hành trình.', '11/11/2026', 'Hà Nội', 10),
 (20, 'Tour Đảo Phú Quý: Thiên Đường Thu Nhỏ', 1, 3699000.00, '3 ngày 2 đêm', 'https://vj-prod-website-cms.s3.ap-southeast-1.amazonaws.com/shutterstock597812177huge1-1679385132078.jpg', 'Ngày 1: Phan Thiết – Vượt Sóng Ra Khơi\r\n\r\nSáng: Di chuyển từ Cảng Phan Thiết đi tàu cao tốc ra Đảo Phú Quý. Check-in nhận phòng.\r\n\r\nChiều: Tham quan Cột cờ chủ quyền biển đảo, ngắm nhìn Bãi Nhỏ - Gành Hang (nơi có hồ bơi vô cực tự nhiên giữa các vách đá).\r\n\r\nTối: Thưởng thức đặc sản Cua Huỳnh Đế hoặc bò nóng Phú Quý.\r\n\r\nNgày 2: Check-in \"Cây cô đơn\" – Đỉnh Cao Cát\r\n\r\nSáng: Đón bình minh tại Dốc Phượt (cung đường ven biển đẹp nhất đảo). Check-in \"Cây cô đơn\" và viếng Chùa Linh Sơn trên đỉnh núi Cao Cát hùng vĩ.\r\n\r\nChiều: Đi cano ra Hòn Tranh – hòn đảo phụ đẹp nhất Phú Quý để tắm biển và lặn ngắm san hô. Thăm mộ Thầy Sài Nại.\r\n\r\nTối: Dạo quanh bờ kè phía Bắc, hóng gió biển và ăn vặt hải sản.\r\n\r\nNgày 3: Điện Gió Phú Quý – Tạm Biệt\r\n\r\nSáng: Tham quan cánh đồng Điện Gió, chụp ảnh với những chiếc quạt gió khổng lồ trắng muốt trên nền cỏ xanh.\r\n\r\nTrưa: Mua hải sản khô và đồ lưu niệm tại cảng. Lên tàu cao tốc trở về đất liền.', '04/05/2026', 'TP.HCM', 12),
 (21, 'Tour An Giang: Thất Sơn Hùng Vĩ – Rừng Tràm Trà Sư', 4, 999999.00, '2 Ngày 1 Đêm', 'https://cdn3.ivivu.com/2025/12/du-lich-an-giang-ivivu-1.png', 'Ngày 1: Châu Đốc – Miếu Bà Chúa Xứ – Núi Sam\r\n\r\nSáng: Viếng Miếu Bà Chúa Xứ Núi Sam, chùa Tây An và lăng Thoại Ngọc Hầu. Đây là cụm di tích tâm linh lớn nhất miền Tây.\r\n\r\nChiều: Chinh phục Núi Cấm, tham quan hồ Thủy Liêm và chiêm bái tượng Phật Di Lặc khổng lồ trên đỉnh núi.\r\n\r\nTối: Thưởng thức lẩu mắm Châu Đốc, dạo chợ đêm mua sắm các loại mắm đặc sản.\r\n\r\nNgày 2: Rừng Tràm Trà Sư – Cánh Đồng Thốt Nốt\r\n\r\nSáng: Khám phá Rừng Tràm Trà Sư, đi tắc ráng xuyên qua thảm bèo xanh mướt, ngắm nhìn hệ sinh thái chim cò đa dạng.\r\n\r\nChiều: Check-in những hàng thốt nốt hình trái tim tại Tri Tôn. Ghé mua đường thốt nốt làm quà.\r\n\r\nTối: Kết thúc hành trình tại TP. Long Xuyên.', '18/08/2026', 'Mỹ Tho', 15),
-(22, 'Tour Cà Mau: Hành Trình Đất Mũi – Điểm Cực Nam', 3, 999999.00, '2 Ngày 1 Đêm', 'https://phuotvivu.com/blog/wp-content/uploads/2021/06/c%C3%A0-mau2.jpg', 'Ngày 1: Sóc Trăng – Bạc Liêu – Khám Phá Đất Mũi\r\n\r\nSáng: Khởi hành đi Sóc Trăng, viếng Chùa Som Rong với tượng Phật Thích Ca nằm lớn nhất Việt Nam. Sau đó ghé Bạc Liêu tham quan Nhà Công tử Bạc Liêu huyền thoại.\r\n\r\nChiều: Check-in Cánh đồng điện gió Bạc Liêu (được mệnh danh là \"Hà Lan thu nhỏ\"). Tiếp tục di chuyển xuyên qua những cung đường rừng ngập mặn để đến với Xóm Mũi.\r\n\r\nTối: Trải nghiệm ngủ đêm tại homestay giữa rừng đước. Thưởng thức đặc sản: Cua Cà Mau, cá thòi lòi nướng muối ớt, vọp hấp gừng.\r\n\r\nNgày 2: Cột Mốc Tọa Độ GPS 0001 – Hệ Sinh Thái Rừng Đước\r\n\r\nSáng: Check-in Cột mốc tọa độ quốc gia GPS 0001 và Biểu tượng Con Tàu tại Công viên Văn hóa Du lịch Mũi Cà Mau. Chụp ảnh tại điểm cuối cùng của đường Hồ Chí Minh (Km 2436).\r\n\r\nTrưa: Trải nghiệm đi vỏ lãi (xuồng máy) len lỏi qua những con rạch nhỏ trong rừng đước, tìm hiểu về hệ sinh thái rừng ngập mặn lớn thứ 2 thế giới.\r\n\r\nChiều: Tham quan Đầm Thị Tường – \"biển hồ\" giữa đất đất liền. Sau đó khởi hành trở về điểm xuất phát.', '', 'Đồng Tháp', 17);
+(22, 'Tour Cà Mau: Hành Trình Đất Mũi – Điểm Cực Nam', 3, 10000000.00, '2 Ngày 1 Đêm', 'https://phuotvivu.com/blog/wp-content/uploads/2021/06/c%C3%A0-mau2.jpg', 'Ngày 1: Sóc Trăng – Bạc Liêu – Khám Phá Đất Mũi\r\n\r\nSáng: Khởi hành đi Sóc Trăng, viếng Chùa Som Rong với tượng Phật Thích Ca nằm lớn nhất Việt Nam. Sau đó ghé Bạc Liêu tham quan Nhà Công tử Bạc Liêu huyền thoại.\r\n\r\nChiều: Check-in Cánh đồng điện gió Bạc Liêu (được mệnh danh là \"Hà Lan thu nhỏ\"). Tiếp tục di chuyển xuyên qua những cung đường rừng ngập mặn để đến với Xóm Mũi.\r\n\r\nTối: Trải nghiệm ngủ đêm tại homestay giữa rừng đước. Thưởng thức đặc sản: Cua Cà Mau, cá thòi lòi nướng muối ớt, vọp hấp gừng.\r\n\r\nNgày 2: Cột Mốc Tọa Độ GPS 0001 – Hệ Sinh Thái Rừng Đước\r\n\r\nSáng: Check-in Cột mốc tọa độ quốc gia GPS 0001 và Biểu tượng Con Tàu tại Công viên Văn hóa Du lịch Mũi Cà Mau. Chụp ảnh tại điểm cuối cùng của đường Hồ Chí Minh (Km 2436).\r\n\r\nTrưa: Trải nghiệm đi vỏ lãi (xuồng máy) len lỏi qua những con rạch nhỏ trong rừng đước, tìm hiểu về hệ sinh thái rừng ngập mặn lớn thứ 2 thế giới.\r\n\r\nChiều: Tham quan Đầm Thị Tường – \"biển hồ\" giữa đất đất liền. Sau đó khởi hành trở về điểm xuất phát.', '', 'Đồng Tháp', 17);
 
 -- --------------------------------------------------------
 
@@ -234,9 +238,6 @@ CREATE TABLE `tour_images` (
 --
 
 INSERT INTO `tour_images` (`ImageID`, `TourID`, `ImageURL`) VALUES
-(6, 22, 'https://media.istockphoto.com/id/1442197622/fr/photo/la-route-%C3%A0-travers-la-for%C3%AAt-de-mangrove.webp?a=1&b=1&s=612x612&w=0&k=20&c=ufgRBBCBwW3Sax_2QwqT9IwbB7dK9g2OvTxon0jeOOs='),
-(7, 22, 'https://media.istockphoto.com/id/467939504/fr/photo/p%C3%AAcheur-sur-la-rivi%C3%A8re.webp?a=1&b=1&s=612x612&w=0&k=20&c=y3OqcqWb66WZAW01jXhrGWX1x7vpQrCiAZ4yrZsatQ4='),
-(8, 22, 'https://media.istockphoto.com/id/2154285231/fr/photo/palmier-nipa-et-fruit-du-palmier-nipa.webp?a=1&b=1&s=612x612&w=0&k=20&c=FX8kRIKDpkr-OWqMmx_IFbtwKZJypUM8PzvCQufoxvA='),
 (9, 21, 'https://ik.imagekit.io/tvlk/blog/2022/02/dia-diem-du-lich-an-giang-cover.jpeg?tr=q-70,c-at_max,w-500,h-250,dpr-2'),
 (10, 21, 'https://ik.imagekit.io/tvlk/blog/2022/02/dia-diem-du-lich-an-giang-1-819x1024.jpg?tr=q-70,c-at_max,w-1000,h-600'),
 (11, 21, 'https://ik.imagekit.io/tvlk/blog/2022/02/dia-diem-du-lich-an-giang-2-983x1024.jpg?tr=q-70,c-at_max,w-1000,h-600'),
@@ -254,7 +255,11 @@ INSERT INTO `tour_images` (`ImageID`, `TourID`, `ImageURL`) VALUES
 (23, 17, 'https://media.vietravel.com/images/Content/bao-tang-quang-ninh-1.jpg'),
 (24, 16, 'https://statics.vinpearl.com/vi-tri-dao-ly-son_1743165853.jpg'),
 (25, 16, 'https://statics.vinpearl.com/dia-hinh-dao-ly-son_1743165909.jpg'),
-(26, 16, 'https://statics.vinpearl.com/khi-hau-dao-ly-son_1743165930.jpg');
+(26, 16, 'https://statics.vinpearl.com/khi-hau-dao-ly-son_1743165930.jpg'),
+(27, 22, 'https://cdn3.ivivu.com/2025/11/du-lich-ca-mau-ivivu-1.jpg'),
+(28, 22, 'https://cdn3.ivivu.com/2025/11/du-lich-ca-mau-ivivu-3.jpg'),
+(29, 22, 'https://cdn3.ivivu.com/2025/11/du-lich-ca-mau-ivivu.jpg'),
+(30, 22, 'https://tgu.edu.vn/upload/images/4_DHTG-2024.jpg');
 
 -- --------------------------------------------------------
 
@@ -279,11 +284,11 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`UserID`, `Username`, `Password`, `FullName`, `Email`, `Phone`, `CreateDate`, `reset_token`, `reset_expires`) VALUES
-(1, 'Sơn Vi Vu', '$2y$10$CX7.VIiv5jTuqBbbAvJpwuM8XrxEXe1Brabofe34qpMUr0CihUCtC', 'nguyễn Ngọc Sơn', 'joji19982@gmail.com', NULL, '2026-03-21 19:55:51', NULL, NULL),
-(2, 'Nguyễn Văn An', '$2y$10$CX7.VIiv5jTuqBbbAvJpwuM8XrxEXe1Brabofe34qpMUr0CihUCtC', 'An', 'joji19982@gmail.com', NULL, '2026-04-07 17:14:34', NULL, NULL),
-(3, 'Nguyễn Văn Anh', '$2y$10$CX7.VIiv5jTuqBbbAvJpwuM8XrxEXe1Brabofe34qpMUr0CihUCtC', 'Anh', 'joji19982@gmail.com', NULL, '2026-04-07 17:45:53', NULL, NULL),
-(4, 'An', '$2y$10$CX7.VIiv5jTuqBbbAvJpwuM8XrxEXe1Brabofe34qpMUr0CihUCtC', 'Trần An Alex', 'joji19982@gmail.com', NULL, '2026-04-07 17:56:50', NULL, NULL),
-(5, 'Sơn', '$2y$10$CX7.VIiv5jTuqBbbAvJpwuM8XrxEXe1Brabofe34qpMUr0CihUCtC', 'Trần An Alex', 'joji19982@gmail.com', NULL, '2026-04-07 18:01:42', NULL, NULL);
+(1, 'Sơn Vi Vu', '$2y$10$4uft9Z1qmKbze7eWObgczOW3dlyoWOITURolDn.iudch0F5mNmZP.', 'nguyễn Ngọc Sơn', 'joji19982@gmail.com', NULL, '2026-03-21 19:55:51', NULL, NULL),
+(2, 'Nguyễn Văn An', '$2y$10$4uft9Z1qmKbze7eWObgczOW3dlyoWOITURolDn.iudch0F5mNmZP.', 'An', 'joji19982@gmail.com', NULL, '2026-04-07 17:14:34', NULL, NULL),
+(3, 'Nguyễn Văn Anh', '$2y$10$4uft9Z1qmKbze7eWObgczOW3dlyoWOITURolDn.iudch0F5mNmZP.', 'Anh', 'joji19982@gmail.com', NULL, '2026-04-07 17:45:53', NULL, NULL),
+(4, 'An', '$2y$10$4uft9Z1qmKbze7eWObgczOW3dlyoWOITURolDn.iudch0F5mNmZP.', 'Trần An Alex', 'joji19982@gmail.com', NULL, '2026-04-07 17:56:50', NULL, NULL),
+(5, 'Sơn', '$2y$10$4uft9Z1qmKbze7eWObgczOW3dlyoWOITURolDn.iudch0F5mNmZP.', 'Trần An Alex', 'joji19982@gmail.com', NULL, '2026-04-07 18:01:42', NULL, NULL);
 
 --
 -- Chỉ mục cho các bảng đã đổ
@@ -364,7 +369,7 @@ ALTER TABLE `admins`
 -- AUTO_INCREMENT cho bảng `bookings`
 --
 ALTER TABLE `bookings`
-  MODIFY `BookingID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `BookingID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT cho bảng `categories`
@@ -388,7 +393,7 @@ ALTER TABLE `news`
 -- AUTO_INCREMENT cho bảng `reviews`
 --
 ALTER TABLE `reviews`
-  MODIFY `ReviewID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `ReviewID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT cho bảng `tours`
@@ -400,7 +405,7 @@ ALTER TABLE `tours`
 -- AUTO_INCREMENT cho bảng `tour_images`
 --
 ALTER TABLE `tour_images`
-  MODIFY `ImageID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `ImageID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT cho bảng `users`
