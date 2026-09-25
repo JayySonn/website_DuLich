@@ -1,90 +1,137 @@
 <?php
+session_start();
 include 'db.php';
 
-if (isset($_POST['btnRegister'])) {
-    // 1. Dùng trim() để cắt bỏ khoảng trắng thừa (chống nhập toàn dấu cách)
-    $user = mysqli_real_escape_string($conn, trim($_POST['txtUser']));
-    $name = mysqli_real_escape_string($conn, trim($_POST['txtName']));
-    $email = mysqli_real_escape_string($conn, trim($_POST['txtEmail']));
-    $raw_pass = trim($_POST['txtPass']);
+$error = '';
+$success = '';
 
-    // Kiểm tra dữ liệu rỗng sau khi đã cắt khoảng trắng
-    if (empty($user) || empty($name) || empty($email) || empty($raw_pass)) {
-        $error = "Vui lòng điền đầy đủ thông tin, không dùng toàn khoảng trắng!";
-    } 
-    // 2. Bắt buộc mật khẩu phải từ 6 ký tự trở lên
-    elseif (strlen($raw_pass) < 6) {
-        $error = "Mật khẩu quá yếu! Vui lòng nhập ít nhất 6 ký tự.";
-    }
-    // Kiểm tra định dạng Email chuẩn
-    elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $error = "Vui lòng nhập đúng định dạng email (ví dụ: mientay@gmail.com)";
-    } 
-    else {
-        // Mã hóa mật khẩu sau khi đã qua bài kiểm tra độ dài
-        $pass = password_hash($raw_pass, PASSWORD_DEFAULT); 
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $fullname = mysqli_real_escape_string($conn, $_POST['fullname']);
+    $email = mysqli_real_escape_string($conn, $_POST['email']);
+    $username = mysqli_real_escape_string($conn, $_POST['username']);
+    $password = $_POST['password'];
 
-        // 3. Gộp kiểm tra trùng Username VÀ trùng Email vào 1 câu lệnh
-        $check = mysqli_query($conn, "SELECT * FROM Users WHERE Username='$user' OR Email='$email'");
-        
-        if(mysqli_num_rows($check) > 0) {
-            $row = mysqli_fetch_assoc($check);
-            if ($row['Username'] === $user) {
-                $error = "Tên đăng nhập này đã có người sử dụng!";
-            } else {
-                $error = "Email này đã được đăng ký cho một tài khoản khác!";
-            }
+    // Kiểm tra xem Username hoặc Email đã tồn tại chưa
+    $sql_check = "SELECT * FROM Users WHERE Username='$username' OR Email='$email'";
+    $result_check = mysqli_query($conn, $sql_check);
+
+    if (mysqli_num_rows($result_check) > 0) {
+        $error = "Tên đăng nhập hoặc Email đã được sử dụng!";
+    } else {
+        // Mã hóa mật khẩu
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+        // THÊM VÀO CƠ SỞ DỮ LIỆU (Đã xóa cột 'Role' gây lỗi)
+        $sql_insert = "INSERT INTO Users (FullName, Email, Username, Password) 
+                       VALUES ('$fullname', '$email', '$username', '$hashed_password')";
+
+        if (mysqli_query($conn, $sql_insert)) {
+            $success = "Đăng ký thành công! Vui lòng đăng nhập.";
         } else {
-            // Mọi thứ hoàn hảo -> Lưu vào Database
-            $sql = "INSERT INTO Users (Username, Password, FullName, Email, Role) 
-                    VALUES ('$user', '$pass', '$name', '$email', 'Khách hàng')";
-            
-            if (mysqli_query($conn, $sql)) {
-                echo "<script>alert('Đăng ký thành công! Hãy đăng nhập.'); window.location='login_user.php';</script>";
-            } else {
-                $error = "Lỗi đăng ký: " . mysqli_error($conn);
-            }
+            $error = "Lỗi khi đăng ký: " . mysqli_error($conn);
         }
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Đăng ký tài khoản</title>
+    <title>Đăng ký - Miền Tây Travel</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Sử dụng phông chữ giống login_user.php -->
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { background: #f4f7f6; height: 100vh; display: flex; align-items: center; justify-content: center; }
-        .reg-card { width: 100%; max-width: 450px; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); background: #fff; }
+        body {
+            background-color: #f4f7f6; /* Nền giống login_user.php */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            font-family: 'Lexend', sans-serif; /* Phông chữ đồng bộ */
+        }
+        .register-card {
+            background: #fff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05); /* Bóng đổ giống login_user.php */
+            width: 100%;
+            max-width: 450px;
+        }
+        /* Thay đổi màu sắc thành xanh dương giống login_user.php */
+        .text-primary-custom {
+            color: #0d6efd !important; /* Xanh dương Bootstrap mặc định */
+        }
+        .btn-primary-custom {
+            background-color: #0d6efd;
+            border: none;
+            font-weight: bold;
+            padding: 10px;
+        }
+        .btn-primary-custom:hover {
+            background-color: #0b5ed7;
+        }
+        /* Style cho input giống login_user.php */
+        .form-control {
+            background-color: #f8f9fa;
+            border: none;
+            border-radius: 50rem !important; /* Bo tròn giống login_user.php */
+            padding: 0.75rem 1.25rem;
+        }
+        .form-control:focus {
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+            background-color: #fff;
+        }
     </style>
 </head>
 <body>
-    <div class="reg-card">
-        <h3 class="text-center fw-bold text-success mb-4">ĐĂNG KÝ THÀNH VIÊN</h3>
+
+<div class="register-card">
+    <h3 class="text-center fw-bold text-primary-custom mb-4 text-uppercase">ĐĂNG KÝ</h3>
+    
+    <?php if($error != ''): ?>
+        <div class="alert alert-danger py-2 small text-center fw-bold"><?php echo $error; ?></div>
+    <?php endif; ?>
+
+    <?php if($success != ''): ?>
+        <div class="alert alert-success py-2 small text-center fw-bold"><?php echo $success; ?></div>
+        <!-- Chuyển hướng về trang đăng nhập sau 2 giây nếu thành công -->
+        <script>
+            setTimeout(function(){
+                window.location.href = 'login_user.php';
+            }, 2000);
+        </script>
+    <?php endif; ?>
+
+    <form method="POST" action="">
+        <div class="mb-3">
+            <label class="form-label small fw-bold">Họ và tên</label>
+            <input type="text" name="fullname" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label small fw-bold">Email</label>
+            <input type="email" name="email" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label small fw-bold">Tên đăng nhập</label>
+            <input type="text" name="username" class="form-control" required>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label small fw-bold">Mật khẩu</label>
+            <input type="password" name="password" class="form-control" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary-custom w-100 rounded-pill mb-3 text-white">ĐĂNG KÝ</button>
         
-        <?php if(isset($error)) echo "<div class='alert alert-danger small fw-bold text-center'>$error</div>"; ?>
-        
-        <form method="POST">
-            <div class="mb-2">
-                <label class="form-label small fw-bold">Họ và tên</label>
-                <input type="text" name="txtName" class="form-control rounded-pill px-3" required>
-            </div>
-            <div class="mb-2">
-                <label class="form-label small fw-bold">Email</label>
-                <input type="email" name="txtEmail" class="form-control rounded-pill px-3" placeholder="ví dụ: ten@gmail.com" required>
-            </div>
-            <div class="mb-2">
-                <label class="form-label small fw-bold">Tên đăng nhập</label>
-                <input type="text" name="txtUser" class="form-control rounded-pill px-3" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label small fw-bold">Mật khẩu</label>
-                <input type="password" name="txtPass" class="form-control rounded-pill px-3" placeholder="Ít nhất 6 ký tự" required>
-            </div>
-            <button type="submit" name="btnRegister" class="btn btn-success w-100 rounded-pill fw-bold">XÁC NHẬN ĐĂNG KÝ</button>
-            <p class="text-center mt-3 small">Đã có tài khoản? <a href="login_user.php" class="text-success fw-bold text-decoration-none">Đăng nhập</a></p>
-        </form>
-    </div>
+        <div class="text-center small">
+            Đã có tài khoản? <a href="login_user.php" class="text-primary-custom text-decoration-none fw-bold">Đăng nhập ngay</a>
+        </div>
+    </form>
+</div>
+
 </body>
 </html>
