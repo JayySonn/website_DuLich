@@ -101,14 +101,20 @@ if(isset($_POST['btnThem'])) {
                                 <label class="form-label">Thời gian:</label>
                                 <input type="text" name="duration" class="form-control rounded-3" placeholder="Ví dụ: 3 ngày 2 đêm">
                             </div>
+                            
+                            <!-- Đã cập nhật gợi ý cho Lịch khởi hành -->
                             <div class="col-md-3 mb-3">
-                                <label class="form-label">Lịch khởi hành:</label>
-                                <input type="text" name="departure_schedule" class="form-control rounded-3" placeholder="Ví dụ: Thứ 7 hàng tuần">
+                                <label class="form-label">Ngày đi / Lịch khởi hành:</label>
+                                <input type="text" name="departure_schedule" class="form-control rounded-3" placeholder="VD: 18/08/2026, Theo yêu cầu...">
+                                
                             </div>
+                            
+                            <!-- Đã đổi nhãn thành Nơi xuất phát -->
                             <div class="col-md-3 mb-3">
-                                <label class="form-label fw-bold">Điểm khởi hành:</label>
+                                <label class="form-label fw-bold">Nơi xuất phát:</label>
                                 <input type="text" name="departure_location" class="form-control rounded-3" placeholder="Ví dụ: Mỹ Tho, Tiền Giang">
                             </div>
+                            
                             <div class="col-md-3 mb-3">
                                 <label class="form-label">Đường dẫn ảnh (URL):</label>
                                 <input type="text" name="image_url" class="form-control rounded-3" placeholder="https://anh-dep.jpg">
@@ -136,7 +142,7 @@ if(isset($_POST['btnThem'])) {
 </div>
 
 <footer class="text-center pb-4 text-muted small">
-  © 2026 Hệ thống quản trị MienTay Travel - Admin
+  © 2026 Hệ thống quản trị MienTay Travel
 </footer>
 
 </body>

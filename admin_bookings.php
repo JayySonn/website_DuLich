@@ -293,7 +293,7 @@ if (!empty($query_string)) {
 </div>
 
 <footer class="text-center mt-5 py-4 text-muted small">
-    © 2026 Quản trị MiềnTây Travel - Chào Sơn!
+    © 2026 Quản trị MiềnTây Travel 
 </footer>
 
 <div class="modal fade" id="modalDetail" tabindex="-1" aria-hidden="true">

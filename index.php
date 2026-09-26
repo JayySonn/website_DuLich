@@ -160,8 +160,13 @@ $res_cats = mysqli_query($conn,$sql_cats);
                                 <h5 class="card-title fw-bold mb-3"><?php echo $row['TourName']; ?></h5>
                                 <div class="d-flex flex-column gap-2 text-muted mb-4 small">
                                     <span><i class="bi bi-clock me-1 text-primary"></i> <?php echo $row['Duration']; ?></span>
-                                    <span><i class="bi bi-calendar-event me-1 text-primary"></i> Lịch trình: <?php echo (!empty($row['DepartureSchedule'])) ?$row['DepartureSchedule'] : "Liên hệ"; ?></span>
-                                    <span><i class="bi bi-geo-alt me-1 text-primary"></i> Khởi hành: <?php echo (!empty($row['DepartureLocation'])) ?$row['DepartureLocation'] : "Liên hệ Admin"; ?></span>
+                                    
+                                    <!-- ĐÃ ĐỔI NHÃN VÀ THÊM FALLBACK LÀ "Theo yêu cầu" -->
+                                    <span><i class="bi bi-calendar-event me-1 text-primary"></i> Ngày đi: <?php echo (!empty($row['DepartureSchedule'])) ?$row['DepartureSchedule'] : "Theo yêu cầu"; ?></span>
+                                    
+                                    <!-- ĐÃ ĐỔI NHÃN THÀNH "Nơi xuất phát" -->
+                                    <span><i class="bi bi-geo-alt me-1 text-primary"></i> Nơi xuất phát: <?php echo (!empty($row['DepartureLocation'])) ?$row['DepartureLocation'] : "Liên hệ Admin"; ?></span>
+                                    
                                     <span><i class="bi bi-people me-1 text-primary"></i> Còn trống: <b class="text-danger"><?php echo $remain; ?></b> / <?php echo$max; ?> khách</span>
                                 </div>
                                 <div class="d-grid">

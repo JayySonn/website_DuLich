@@ -23,42 +23,56 @@
                     </a>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link px-3 text-white d-flex align-items-center" href="admin_bookings.php">
-                        <i class="bi bi-cart-check me-2"></i> Đơn Hàng
+                <!-- MENU THẢ XUỐNG: ĐƠN HÀNG & ĐIỀU HÀNH -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link px-3 text-white dropdown-toggle d-flex align-items-center" href="#" id="navbarBookings" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-cart-check me-2"></i> Quản lý Đơn hàng
                     </a>
+                    <ul class="dropdown-menu dropdown-menu-dark shadow border-0 mt-2" aria-labelledby="navbarBookings">
+                        <li>
+                            <a class="dropdown-item py-2 d-flex align-items-center" href="admin_bookings.php">
+                                <i class="bi bi-list-ul me-2 text-info"></i> Danh sách Đơn đặt
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider border-secondary"></li>
+                        <li>
+                            <a class="dropdown-item py-2 d-flex align-items-center" href="admin_tour_operations.php">
+                                <i class="bi bi-bus-front me-2 text-warning"></i> Điều hành theo Tour
+                            </a>
+                        </li>
+                    </ul>
                 </li>
 
                 <li class="nav-item">
                     <a class="nav-link px-3 text-white d-flex align-items-center" href="admin_list_tours.php">
-                        <i class="bi bi-list-ul me-2"></i> Danh Sách Tour
+                        <i class="bi bi-geo-alt me-2"></i> Danh Sách Tour
                     </a>
                 </li>
 
                 <!-- MENU THẢ XUỐNG: QUẢN LÝ TƯƠNG TÁC -->
-<li class="nav-item dropdown">
-    <a class="nav-link px-3 text-white dropdown-toggle d-flex align-items-center" href="#" id="navbarInteract" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="bi bi-chat-right-dots me-2"></i> Tương tác
-    </a>
-    <ul class="dropdown-menu dropdown-menu-dark shadow border-0 mt-2" aria-labelledby="navbarInteract">
-        <li>
-            <a class="dropdown-item py-2 d-flex align-items-center" href="admin_contacts.php">
-                <i class="bi bi-inbox me-2"></i> Hộp thư Liên hệ
-            </a>
-        </li>
-        <li>
-            <a class="dropdown-item py-2 d-flex align-items-center" href="admin_news.php">
-                <i class="bi bi-newspaper me-2"></i> Quản lý Tin tức
-            </a>
-        </li>
-        <li><hr class="dropdown-divider border-secondary"></li>
-        <li>
-            <a class="dropdown-item py-2 d-flex align-items-center" href="admin_reviews.php">
-                <i class="bi bi-star-half me-2"></i> Quản lý Bình luận
-            </a>
-        </li>
-    </ul>
-</li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link px-3 text-white dropdown-toggle d-flex align-items-center" href="#" id="navbarInteract" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-chat-right-dots me-2"></i> Tương tác
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark shadow border-0 mt-2" aria-labelledby="navbarInteract">
+                        <li>
+                            <a class="dropdown-item py-2 d-flex align-items-center" href="admin_contacts.php">
+                                <i class="bi bi-inbox me-2"></i> Hộp thư Liên hệ
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item py-2 d-flex align-items-center" href="admin_news.php">
+                                <i class="bi bi-newspaper me-2"></i> Quản lý Tin tức
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider border-secondary"></li>
+                        <li>
+                            <a class="dropdown-item py-2 d-flex align-items-center" href="admin_reviews.php">
+                                <i class="bi bi-star-half me-2"></i> Quản lý Bình luận
+                            </a>
+                        </li>
+                    </ul>
+                </li>
                 
                 <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
                     <a class="nav-link px-4 text-white border border-secondary rounded-pill d-flex align-items-center" href="admin_add_tour.php" style="background: rgba(255,255,255,0.05);">
